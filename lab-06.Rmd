@@ -296,27 +296,52 @@ Whickham %>%
 ### Challenge Graph
 
 ```{r try to recreate challenge graph}
-# Prepare data for a challenge visualization
-whickham_plot_data <- Whickham %>%
+install.packages("ggpattern")
+library(ggpattern)
+```
+
+```{r recreating challenge graph}
+library(ggplot2)
+library(dplyr)
+library(ggpattern)
+
+df <- Whickham %>%
+  mutate(age_cat = case_when(
+    age <= 44 ~ "18-44",
+    age <= 64 ~ "45-64",
+    age > 64 ~ "65+",
+    TRUE ~ NA_character_
+  ) %>% factor(levels = c("18-44", "45-64", "65+"))) %>%
   count(age_cat, smoker, outcome) %>%
   group_by(age_cat, smoker) %>%
-  mutate(prop = n / sum(n))
+  mutate(
+    percent = n / sum(n),
+    ymax = cumsum(percent),
+    ymin = lag(ymax, default = 0)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    xmin = if_else(smoker == "No", 3, 2),
+    xmax = if_else(smoker == "No", 4, 3)
+  )
 
-# Create a faceted proportion plot by age group
-ggplot(whickham_plot_data, aes(
-  x = smoker,
-  y = prop,
-  fill = outcome
-)) +
-  geom_col(position = "fill") +
-  facet_wrap(~ age_cat) +
-  labs(
-    title = "Smoking and Health Outcomes Differ Across Age Groups",
-    subtitle = "Age explains why the overall relationship is misleading",
-    x = "Smoking status",
-    y = "Proportion",
-    fill = "Outcome"
+# Recreate the challenge graph as donut charts
+ggplot(df, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = smoker)) +
+  geom_rect_pattern(
+    aes(
+      pattern_fill = outcome,
+      pattern_type = smoker
+    ),
+    color = "white", linewidth = 0.3,
+    pattern = "polygon_tiling",
+    pattern_alpha = 0.35
   ) +
-  theme_minimal()
+  coord_polar(theta = "y") +
+  xlim(1.5, 4) +
+  facet_wrap(~age_cat) +
+  scale_pattern_type_discrete(choices = gridpattern::names_polygon_tiling) +
+  scale_pattern_fill_manual(values = c("Alive" = "#E67819", "Dead" = "#201a12")) +
+  scale_fill_manual(values = c("Yes" = "black", "No" = "#dbcbb0")) +
+  theme_void()
 ```
 
