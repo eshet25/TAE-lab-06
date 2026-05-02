@@ -1,7 +1,7 @@
 ---
 title: "Lab 06 - Ugly charts and Simpson's paradox"
-author: "Insert your name here"
-date: "Insert date here"
+author: "Tsion"
+date: "02/26/26"
 output: github_document
 ---
 
@@ -9,26 +9,77 @@ output: github_document
 
 ```{r load-packages, message = FALSE}
 library(tidyverse) 
-library(dsbox)
 library(mosaicData) 
 ```
 
+### Instructional staff employment trends 
+
+```{r read data and glimpse}
+staff <- read_csv("data/instructional-staff.csv")
+glimpse(staff)
+```
+Each row is a faculty type, and each year is stored in a separate column.
+
 ### Exercise 1
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+```{r change from wide to long}
+staff_long <- staff %>%
+  pivot_longer(cols = -faculty_type, names_to = "year") %>%
+  mutate(value = as.numeric(value))
+staff_long
+```
+
+
+```{r Make a basic line graph of faculty type over time}
+staff_long %>%
+  ggplot(aes(
+    x = year,
+    y = value,
+    group = faculty_type,
+    color = faculty_type
+  )) +
+  geom_line(linewidth = 1) +
+  labs(
+    title = "Instructional Staff Employment Trends",
+    x = "Year",
+    y = "Percentage of instructional staff",
+    color = "Faculty type"
+  ) +
+  theme_minimal()
+```
+
+The line plot shows how the percentage of different types of instructional staff changed over time. The improved plot is easier to understand than the original because the years are on the x-axis, percentages are on the y-axis, and each faculty type is shown with a separate colored line.
 
 ### Exercise 2
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+In my opinion, to make the story clearer, I would emphasize Part-Time Faculty because this group appears to increase over time compared with some other faculty types. I would use a stronger color or thicker line for Part-Time Faculty and make the other lines more muted? I think this would help the viewer to focus more on the main trend instead of trying to compare every line equally.
 
-### Exercise 3
+```{r Improve the plot by highlighting Part-Time Faculty}
+staff_long %>%
+  mutate(
+    highlight = if_else(faculty_type == "Part-Time Faculty", 
+                        "Part-Time Faculty", 
+                        "Other faculty types")
+  ) %>%
+  ggplot(aes(
+    x = year,
+    y = value,
+    group = faculty_type
+  )) +
+  geom_line(aes(color = highlight, linewidth = highlight)) +
+  scale_linewidth_manual(values = c("Part-Time Faculty" = 1.4,
+                                    "Other faculty types" = 0.6)) +
+  labs(
+    title = "Part-Time Faculty Became a Larger Share of Instructional Staff",
+    subtitle = "Instructional staff employment trends from 1975 to 2011",
+    x = "Year",
+    y = "Percentage of instructional staff",
+    color = "Group",
+    linewidth = "Group"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
 
-...
-
-Add exercise headings as needed.
