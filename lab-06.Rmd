@@ -201,3 +201,7 @@ ggplot(Whickham, aes(x = age)) +
   theme_minimal()
 ```
 
+### Exercise 7 
+
+I would expect smokers to have worse health outcomes than non-smokers. I think a higher proportion of smokers to be dead compared with non-smokers.
+
