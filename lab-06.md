@@ -288,3 +288,47 @@ There are three variables in the dataset. ‘Outcome’, categorical
 variable showing whether the participant was alive or dead; ‘smoker’,
 categorical variable showing whether the participant smoked; and ‘age’,
 quantitative variable showing the participant’s age.
+
+``` r
+# Visualize health outcome
+ggplot(Whickham, aes(x = outcome, fill = outcome)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Health Outcomes",
+    x = "Outcome",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+![](lab-06_files/figure-gfm/visualize%20each%20outcome-1.png)<!-- -->
+
+``` r
+# Visualize smoking status
+ggplot(Whickham, aes(x = smoker, fill = smoker)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Smoking Status",
+    x = "Smoker",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+![](lab-06_files/figure-gfm/visualize%20each%20outcome-2.png)<!-- -->
+
+``` r
+# Visualize age
+ggplot(Whickham, aes(x = age)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(
+    title = "Distribution of Age",
+    x = "Age",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+![](lab-06_files/figure-gfm/visualize%20each%20outcome-3.png)<!-- -->
