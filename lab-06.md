@@ -332,3 +332,184 @@ ggplot(Whickham, aes(x = age)) +
 ```
 
 ![](lab-06_files/figure-gfm/visualize%20each%20outcome-3.png)<!-- -->
+
+### Exercise 7
+
+I would expect smokers to have worse health outcomes than non-smokers. I
+think a higher proportion of smokers to be dead compared with
+non-smokers.
+
+### Exercise 8
+
+``` r
+Whickham %>%
+  count(smoker, outcome)
+```
+
+    ##   smoker outcome   n
+    ## 1     No   Alive 502
+    ## 2     No    Dead 230
+    ## 3    Yes   Alive 443
+    ## 4    Yes    Dead 139
+
+``` r
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prop = n / sum(n))
+```
+
+    ## # A tibble: 4 × 4
+    ## # Groups:   smoker [2]
+    ##   smoker outcome     n  prop
+    ##   <fct>  <fct>   <int> <dbl>
+    ## 1 No     Alive     502 0.686
+    ## 2 No     Dead      230 0.314
+    ## 3 Yes    Alive     443 0.761
+    ## 4 Yes    Dead      139 0.239
+
+``` r
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(
+    x = smoker,
+    y = prop,
+    fill = outcome
+  )) +
+  geom_col(position = "fill") +
+  labs(
+    title = "Health Outcome by Smoking Status",
+    x = "Smoking status",
+    y = "Proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+![](lab-06_files/figure-gfm/Visualize%20health%20outcome%20by%20smoking%20status-1.png)<!-- -->
+
+At first, the plot may make it look like smokers have better outcomes
+than non-smokers. This is surprising because I expected smokers to have
+worse health outcomes. I think there may be another variable affecting
+the relationship.
+
+### Exercise 9
+
+``` r
+Whickham <- Whickham %>%
+  mutate(
+    age_cat = case_when(
+      age <= 44 ~ "18-44",
+      age > 44 & age <= 64 ~ "45-64",
+      age > 64 ~ "65+"
+    )
+  )
+
+# Check the new variable
+Whickham %>%
+  count(age_cat)
+```
+
+    ##   age_cat   n
+    ## 1   18-44 624
+    ## 2   45-64 447
+    ## 3     65+ 243
+
+### Exercse 10
+
+``` r
+Whickham %>%
+  count(smoker, age_cat, outcome)
+```
+
+    ##    smoker age_cat outcome   n
+    ## 1      No   18-44   Alive 327
+    ## 2      No   18-44    Dead  12
+    ## 3      No   45-64   Alive 147
+    ## 4      No   45-64    Dead  53
+    ## 5      No     65+   Alive  28
+    ## 6      No     65+    Dead 165
+    ## 7     Yes   18-44   Alive 270
+    ## 8     Yes   18-44    Dead  15
+    ## 9     Yes   45-64   Alive 167
+    ## 10    Yes   45-64    Dead  80
+    ## 11    Yes     65+   Alive   6
+    ## 12    Yes     65+    Dead  44
+
+``` r
+Whickham %>%
+  count(smoker, age_cat, outcome) %>%
+  group_by(smoker, age_cat) %>%
+  mutate(prop = n / sum(n))
+```
+
+    ## # A tibble: 12 × 5
+    ## # Groups:   smoker, age_cat [6]
+    ##    smoker age_cat outcome     n   prop
+    ##    <fct>  <chr>   <fct>   <int>  <dbl>
+    ##  1 No     18-44   Alive     327 0.965 
+    ##  2 No     18-44   Dead       12 0.0354
+    ##  3 No     45-64   Alive     147 0.735 
+    ##  4 No     45-64   Dead       53 0.265 
+    ##  5 No     65+     Alive      28 0.145 
+    ##  6 No     65+     Dead      165 0.855 
+    ##  7 Yes    18-44   Alive     270 0.947 
+    ##  8 Yes    18-44   Dead       15 0.0526
+    ##  9 Yes    45-64   Alive     167 0.676 
+    ## 10 Yes    45-64   Dead       80 0.324 
+    ## 11 Yes    65+     Alive       6 0.12  
+    ## 12 Yes    65+     Dead       44 0.88
+
+``` r
+Whickham %>%
+  count(smoker, age_cat, outcome) %>%
+  group_by(smoker, age_cat) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(
+    x = smoker,
+    y = prop,
+    fill = outcome
+  )) +
+  geom_col(position = "fill") +
+  facet_wrap(~ age_cat) +
+  labs(
+    title = "Health Outcome by Smoking Status and Age Group",
+    x = "Smoking status",
+    y = "Proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+![](lab-06_files/figure-gfm/Recreate%20the%20smoking%20and%20outcome%20visualization,%20faceted%20by%20age%20category-1.png)<!-- -->
+
+### Challenge Graph
+
+``` r
+# Prepare data for a challenge visualization
+whickham_plot_data <- Whickham %>%
+  count(age_cat, smoker, outcome) %>%
+  group_by(age_cat, smoker) %>%
+  mutate(prop = n / sum(n))
+
+# Create a faceted proportion plot by age group
+ggplot(whickham_plot_data, aes(
+  x = smoker,
+  y = prop,
+  fill = outcome
+)) +
+  geom_col(position = "fill") +
+  facet_wrap(~ age_cat) +
+  labs(
+    title = "Smoking and Health Outcomes Differ Across Age Groups",
+    subtitle = "Age explains why the overall relationship is misleading",
+    x = "Smoking status",
+    y = "Proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+![](lab-06_files/figure-gfm/try%20to%20recreate%20challenge%20graph-1.png)<!-- -->
