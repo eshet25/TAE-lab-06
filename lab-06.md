@@ -136,3 +136,155 @@ staff_long %>%
 ```
 
 ![](lab-06_files/figure-gfm/Improve%20the%20plot%20by%20highlighting%20Part-Time%20Faculty-1.png)<!-- -->
+
+### Fisheries
+
+### Exercise 3
+
+The original fisheries plots are a bit difficult to understand as they
+stand. The 3D pie charts are hard to compare because the
+three-dimensional effect distorts the size of the slices. There are alos
+too many countries shown at once, which makes the visualization
+cluttered. To improve the visualization, I decided to use a horizontal
+bar chart. I will only show the top countries by total fisheries
+production so the plot is not overcrowded.
+
+``` r
+fisheries <- read_csv("data/fisheries.csv")
+```
+
+    ## Rows: 216 Columns: 4
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (1): country
+    ## dbl (3): capture, aquaculture, total
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+top_countries <- fisheries %>%
+  slice_max(total, n = 20) %>%
+  pull(country)
+```
+
+``` r
+fisheries_long <- fisheries %>%
+  filter(country %in% top_countries) %>%
+  pivot_longer(
+    cols = c(capture, aquaculture),
+    names_to = "type",
+    values_to = "tons"
+  ) %>%
+  mutate(
+    type = recode(type,
+                  "capture" = "Capture fishing",
+                  "aquaculture" = "Aquaculture")
+  )
+
+fisheries_long
+```
+
+    ## # A tibble: 40 × 4
+    ##    country       total type                tons
+    ##    <chr>         <dbl> <chr>              <dbl>
+    ##  1 Bangladesh  3878324 Capture fishing  1674770
+    ##  2 Bangladesh  3878324 Aquaculture      2203554
+    ##  3 Brazil      1286230 Capture fishing   705000
+    ##  4 Brazil      1286230 Aquaculture       581230
+    ##  5 Chile       2879355 Capture fishing  1829238
+    ##  6 Chile       2879355 Aquaculture      1050117
+    ##  7 China      81500000 Capture fishing 17800000
+    ##  8 China      81500000 Aquaculture     63700000
+    ##  9 Egypt       1706274 Capture fishing   335614
+    ## 10 Egypt       1706274 Aquaculture      1370660
+    ## # ℹ 30 more rows
+
+``` r
+fisheries_long %>%
+  ggplot(aes(
+    x = tons,
+    y = fct_reorder(country, tons, .fun = sum),
+    fill = type
+  )) +
+  geom_col() +
+  labs(
+    title = "Top 20 Countries by Fisheries Production",
+    subtitle = "Production is separated into capture fishing and aquaculture",
+    x = "Production in tons",
+    y = "Country",
+    fill = "Production type"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+![](lab-06_files/figure-gfm/Make%20an%20improved%20fisheries%20bar%20chart%20visualization-1.png)<!-- -->
+
+I think this improved plot is easier to read because it avoids 3D pie
+charts, limits the number of countries, and uses a horizontal layout so
+country names are readable. It also makes the distinction between
+capture fishing and aquaculture clearer.
+
+### Stretch Yourself with Smokers in Whickham
+
+``` r
+library(tidyverse)
+library(mosaicData)
+data(Whickham)
+head(Whickham)
+```
+
+    ##   outcome smoker age
+    ## 1   Alive    Yes  23
+    ## 2   Alive    Yes  18
+    ## 3    Dead    Yes  71
+    ## 4   Alive     No  67
+    ## 5   Alive     No  64
+    ## 6   Alive    Yes  38
+
+``` r
+glimpse(Whickham)
+```
+
+    ## Rows: 1,314
+    ## Columns: 3
+    ## $ outcome <fct> Alive, Alive, Dead, Alive, Alive, Alive, Alive, Dead, Alive, A…
+    ## $ smoker  <fct> Yes, Yes, Yes, No, No, Yes, Yes, No, No, No, No, Yes, No, Yes,…
+    ## $ age     <int> 23, 18, 71, 67, 64, 38, 45, 76, 28, 27, 28, 34, 20, 72, 48, 45…
+
+### Exercise 4
+
+These data come from an observational study. Participants were not
+randomly assigned to smoke or not smoke. Instead, their smoking status
+was observed, and their health outcome was recorded later.
+
+### Exercise 5
+
+``` r
+nrow(Whickham)
+```
+
+    ## [1] 1314
+
+There are 1314 observations in the dataset. Each observation represents
+one participant in the Whickham study.
+
+### Exercise 6
+
+``` r
+glimpse(Whickham)
+```
+
+    ## Rows: 1,314
+    ## Columns: 3
+    ## $ outcome <fct> Alive, Alive, Dead, Alive, Alive, Alive, Alive, Dead, Alive, A…
+    ## $ smoker  <fct> Yes, Yes, Yes, No, No, Yes, Yes, No, No, No, No, Yes, No, Yes,…
+    ## $ age     <int> 23, 18, 71, 67, 64, 38, 45, 76, 28, 27, 28, 34, 20, 72, 48, 45…
+
+There are three variables in the dataset. ‘Outcome’, categorical
+variable showing whether the participant was alive or dead; ‘smoker’,
+categorical variable showing whether the participant smoked; and ‘age’,
+quantitative variable showing the participant’s age.

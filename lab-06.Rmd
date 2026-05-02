@@ -83,3 +83,86 @@ staff_long %>%
   )
 ```
 
+### Fisheries
+
+### Exercise 3
+The original fisheries plots are a bit difficult to understand as they stand. The 3D pie charts are hard to compare because the three-dimensional effect distorts the size of the slices. There are alos too many countries shown at once, which makes the visualization cluttered. To improve the visualization, I decided to use a horizontal bar chart. I will only show the top countries by total fisheries production so the plot is not overcrowded.
+
+```{r load data for fisheries}
+fisheries <- read_csv("data/fisheries.csv")
+```
+
+```{r Select the top 20 countries by total production}
+top_countries <- fisheries %>%
+  slice_max(total, n = 20) %>%
+  pull(country)
+```
+
+```{r Change fisheries data from wide to long format}
+fisheries_long <- fisheries %>%
+  filter(country %in% top_countries) %>%
+  pivot_longer(
+    cols = c(capture, aquaculture),
+    names_to = "type",
+    values_to = "tons"
+  ) %>%
+  mutate(
+    type = recode(type,
+                  "capture" = "Capture fishing",
+                  "aquaculture" = "Aquaculture")
+  )
+
+fisheries_long
+```
+
+```{r Make an improved fisheries bar chart visualization}
+fisheries_long %>%
+  ggplot(aes(
+    x = tons,
+    y = fct_reorder(country, tons, .fun = sum),
+    fill = type
+  )) +
+  geom_col() +
+  labs(
+    title = "Top 20 Countries by Fisheries Production",
+    subtitle = "Production is separated into capture fishing and aquaculture",
+    x = "Production in tons",
+    y = "Country",
+    fill = "Production type"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+I think this improved plot is easier to read because it avoids 3D pie charts, limits the number of countries, and uses a horizontal layout so country names are readable. It also makes the distinction between capture fishing and aquaculture clearer. 
+
+
+### Stretch Yourself with Smokers in Whickham
+```{r Load the Whickham data and glimpse}
+library(tidyverse)
+library(mosaicData)
+data(Whickham)
+head(Whickham)
+glimpse(Whickham)
+```
+
+### Exercise 4
+
+These data come from an observational study. Participants were not randomly assigned to smoke or not smoke. Instead, their smoking status was observed, and their health outcome was recorded later.
+
+### Exercise 5
+
+```{r Count the number of observations}
+nrow(Whickham)
+```
+
+There are `r nrow(Whickham)` observations in the dataset. Each observation represents one participant in the Whickham study.
+
+### Exercise 6
+```{r Show variable names and types}
+glimpse(Whickham)
+```
+
+There are three variables in the dataset. 'Outcome', categorical variable showing whether the participant was alive or dead; 'smoker', categorical variable showing whether the participant smoked; and 'age', quantitative variable showing the participant’s age. 
