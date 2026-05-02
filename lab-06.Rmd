@@ -205,3 +205,92 @@ ggplot(Whickham, aes(x = age)) +
 
 I would expect smokers to have worse health outcomes than non-smokers. I think a higher proportion of smokers to be dead compared with non-smokers.
 
+### Exercise 8 
+
+```{r Create a contingency table of smoker status and outcome}
+Whickham %>%
+  count(smoker, outcome)
+```
+
+```{r Calculate conditional probabilities within smoking groups}
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prop = n / sum(n))
+```
+
+```{r Visualize health outcome by smoking status}
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(
+    x = smoker,
+    y = prop,
+    fill = outcome
+  )) +
+  geom_col(position = "fill") +
+  labs(
+    title = "Health Outcome by Smoking Status",
+    x = "Smoking status",
+    y = "Proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+At first, the plot may make it look like smokers have better outcomes than non-smokers. This is surprising because I expected smokers to have worse health outcomes. I think there may be another variable affecting the relationship.
+
+### Exercise 9 
+
+```{r Create a new age category}
+Whickham <- Whickham %>%
+  mutate(
+    age_cat = case_when(
+      age <= 44 ~ "18-44",
+      age > 44 & age <= 64 ~ "45-64",
+      age > 64 ~ "65+"
+    )
+  )
+
+# Check the new variable
+Whickham %>%
+  count(age_cat)
+```
+
+### Exercse 10
+
+```{r Create a contingency table by smoker, age category, and outcome}
+Whickham %>%
+  count(smoker, age_cat, outcome)
+```
+
+```{r Calculate proportions within each smoking group and age category}
+Whickham %>%
+  count(smoker, age_cat, outcome) %>%
+  group_by(smoker, age_cat) %>%
+  mutate(prop = n / sum(n))
+```
+
+```{r Recreate the smoking and outcome visualization, faceted by age category}
+Whickham %>%
+  count(smoker, age_cat, outcome) %>%
+  group_by(smoker, age_cat) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(
+    x = smoker,
+    y = prop,
+    fill = outcome
+  )) +
+  geom_col(position = "fill") +
+  facet_wrap(~ age_cat) +
+  labs(
+    title = "Health Outcome by Smoking Status and Age Group",
+    x = "Smoking status",
+    y = "Proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+
