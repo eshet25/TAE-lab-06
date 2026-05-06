@@ -296,7 +296,7 @@ Whickham %>%
 ### Challenge Graph
 
 ```{r try to recreate challenge graph}
-install.packages("ggpattern")
+#install.packages("ggpattern")
 library(ggpattern)
 ```
 
