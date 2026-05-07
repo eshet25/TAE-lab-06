@@ -10,6 +10,9 @@ output: github_document
 ```{r load-packages, message = FALSE}
 library(tidyverse) 
 library(mosaicData) 
+library(ggplot2)
+library(dplyr)
+library(ggpattern)
 ```
 
 ### Instructional staff employment trends 
@@ -295,16 +298,8 @@ Whickham %>%
 
 ### Challenge Graph
 
-```{r try to recreate challenge graph}
-install.packages("ggpattern")
-library(ggpattern)
-```
 
 ```{r recreating challenge graph}
-library(ggplot2)
-library(dplyr)
-library(ggpattern)
-
 df <- Whickham %>%
   mutate(age_cat = case_when(
     age <= 44 ~ "18-44",
