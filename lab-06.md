@@ -490,6 +490,15 @@ Whickham %>%
 
 ### Challenge Graph
 
+# \<\<\<\<\<\<\< HEAD
+
+``` r
+#install.packages("ggpattern")
+library(ggpattern)
+```
+
+> > > > > > > e7eb87daed763a081e645196d14277c82477d353
+
 ``` r
 df <- Whickham %>%
   mutate(age_cat = case_when(
