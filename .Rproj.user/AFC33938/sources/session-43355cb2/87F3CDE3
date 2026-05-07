@@ -3,7 +3,7 @@
     "path": "~/Github/TAE-lab-06/lab-06.Rmd",
     "project_path": "lab-06.Rmd",
     "type": "r_markdown",
-    "hash": "2326094428",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1774826627683.0,
@@ -13,14 +13,14 @@
         "source_window_id": "",
         "Source": "Source",
         "cursorPosition": "302,0",
-        "scrollLine": "309"
+        "scrollLine": "302"
     },
     "folds": "",
-    "lastKnownWriteTime": 1778123709,
+    "lastKnownWriteTime": 1778123793,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1778123710000,
+    "last_content_update": 1778123793,
     "read_only": false,
     "read_only_alternatives": []
 }
